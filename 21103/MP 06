@@ -1,0 +1,71 @@
+section .data
+msg1 db "",0xA
+len1 equ $-msg1
+menu db "Choose one of the following operations",0xA
+     db "1.Hex to BCD Conversion",0xA
+     db "2.BCD to Hex Conversion",0xA
+     db "3.Exit",0xA
+len equ $-menu
+msg2 db "",0xA
+len2 equ $-msg2     
+num dq 2599h
+cnt db 04h
+divisor db 0Ah
+n1 db 00h
+%macro print 2
+mov rax,01
+mov rdi,01
+mov rsi,%1
+mov rdx,%2
+syscall
+%endmacro
+
+section .bss
+result resb 1
+option resb 2
+res resw 16
+
+section .text
+global _start
+_start:
+print menu,len
+mov rax,00
+mov rdi,00
+mov rsi,option
+mov rdx,2
+syscall
+
+cmp byte[option],'1'
+je HexToBCD
+cmp byte[option],'2'
+;je BCDToHex
+cmp byte[option],'3'
+je Exit
+mov byte[cnt],04h
+
+HexToBCD:
+mov rax,qword[num]
+mov rbx,0xA
+
+L1:
+xor rdx,rdx
+div rbx
+push rdx
+dec byte[cnt]
+jnz L1
+mov byte[cnt],04h
+
+L2:
+pop rdx
+add rdx,30h
+mov qword[result],rdx
+print result,16
+dec byte[cnt]
+jnz L2
+
+BCDToHex:
+
+Exit:
+mov rax,60
+mov rdi,00
+syscall

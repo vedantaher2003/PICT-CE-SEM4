@@ -1,0 +1,15 @@
+
+section data
+num dw 1234
+2re dz,dx
+mov b1 al
+div b1
+push dz
+
+
+
+
+
++
+
+	
