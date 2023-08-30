@@ -1,0 +1,417 @@
+#include <iostream>
+#include<math.h>
+#define MAX 50
+using namespace std;
+
+class node{
+	int data;
+	node *left, *right;
+public:
+	node(int x){
+		data=x;
+		left=NULL;
+		right=NULL;
+	}
+	friend class bst;
+};
+
+template<class T>
+class queue{
+	T arr[MAX];
+	int front,rear;
+public:
+	queue(){
+		front=rear=-1;
+	}
+	bool isEmpty(){
+		if(front==-1){
+			return 1;
+		}
+		else{
+			return 0;
+		}
+	}
+	bool isFull(){
+		if(rear==MAX-1){
+			return 1;
+		}
+		else{
+			return 0;
+		}
+	}
+	void push(T x){
+		if(isFull()){
+			cout<<"Overflow!!"<<endl;
+		}
+		else{
+			if(isEmpty()){
+				front++;
+				rear++;
+				arr[rear]=x;
+			}
+			else{
+				rear++;
+				arr[rear]=x;
+			}
+		}
+	}
+	T pop(){
+		if(isEmpty()){
+			cout<<"Underflow!!"<<endl;
+			return NULL;
+		}
+		else{
+			T a=arr[front];
+			if(front==rear){
+				front=rear=-1;
+			}
+			else{
+				front++;
+			}
+			return a;
+		}
+	}
+	T front1(){
+		return arr[front];
+	}
+};
+
+template<class T>
+class stack{
+	int top;
+	T arr1[MAX];
+public:
+	stack(){
+		top=-1;
+	}
+	bool isEmpty(){
+		if(top==-1){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	bool isFull(){
+		if(top==MAX-1){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	void push(T x){
+		if(isFull()){
+			cout<<"Overflow!!";
+			return;
+		}
+		else{
+			top++;
+			arr1[top]=x;
+		}
+	}
+	T pop(){
+		if(isEmpty()){
+			cout<<"Underflow!!";
+			return NULL;
+		}
+		else{
+			T a=arr1[top];
+			top--;
+			return a;
+		}
+	}
+	T top1(){
+		return arr1[top];
+	}
+
+};
+
+class bst{
+	node *root;
+public:
+	bst(){
+		root=NULL;
+	}
+
+	void create_it(){
+		queue<node*>q;
+		if(root==NULL){
+			cout<<"Enter root data: ";
+			int x;
+			cin>>x;
+			node *nn=new node(x);
+			root=nn;
+			q.push(nn);
+		}
+		while(!q.isEmpty()){
+			node *n=q.pop();
+			int x;
+			cout<<"Enter the data of left child of "<<n->data<<" : ";
+			cin>>x;
+			if(x!=-1){
+				n->left=new node(x);
+				q.push(n->left);
+			}
+			cout<<"Enter the data of right child of "<<n->data<<" : ";
+			cin>>x;
+			if(x!=-1){
+				n->right=new node(x);
+				q.push(n->right);
+			}
+		}
+	}
+
+	void recurssiveCreation() {
+		int temp;
+		cout << "Enter the root: " << endl;
+		cin >> temp;
+		root = new node(temp);
+		creator(root);
+	}
+
+	void creator(node *temp) {
+		int x;
+		cout << "Enter the left child of " << temp->data<< "\n enter -1 to quit" << endl;
+		cin >> x;
+		if (x != -1) {
+			node *newN = new node(x);
+			temp->left = newN;
+			creator(newN);
+		}
+		cout << "Enter the right child of " << temp->data<< "\n enter -1 to quit" << endl;
+		cin >> x;
+		if (x != -1) {
+			node *newN = new node(x);
+			temp->right = newN;
+			creator(newN);
+		}
+	}
+
+	void inorder_it(){
+		stack<node*>s;
+		node *temp=root;
+		while(!s.isEmpty()||temp!=NULL){
+			while(temp!=NULL){
+				s.push(temp);
+				temp=temp->left;
+			}
+			temp=s.pop();
+			cout << temp->data <<" ";
+			temp = temp->right;
+		}
+		cout<<endl;
+	}
+
+	void inorder_rec(node *temp){
+		if(temp==NULL){
+			return;
+		}
+		else{
+			inorder_rec(temp->left);
+			cout<<temp->data<<" ";
+			inorder_rec(temp->right);
+		}
+	}
+
+	void preorder_it(){
+		stack<node*>s;
+		node *temp=root;
+		s.push(temp);
+		while(!s.isEmpty()){
+			node *t=s.pop();
+			cout << t->data << "\t";
+			if(t->right!=NULL){
+				s.push(t->right);
+			}
+			if(t->left!=NULL){
+				s.push(t->left);
+			}
+		}
+	}
+
+	void preorder_rec(node *temp){
+		if(temp==NULL){
+			return;
+		}
+		cout<<temp->data<<" ";
+		preorder_rec(temp->left);
+		preorder_rec(temp->right);
+	}
+
+	void postorder_it(){
+		stack<node*> s1;
+		stack<node*> s2;
+		node *temp = root;
+		s1.push(temp);
+		while(!s1.isEmpty()){
+			node *t=s1.pop();
+			s2.push(t);
+			if (t->left != NULL) {
+				s1.push(t->left);
+			}
+			if (t->right != NULL) {
+				s1.push(t->right);
+			}
+		}
+		while (!s2.isEmpty()) {
+			node *t = s2.top1();
+			s2.pop();
+			cout << t->data << "\t";
+		}
+	}
+
+	void postorder_rec(node *temp){
+		if(temp==NULL){
+			return;
+		}
+		postorder_rec(temp->left);
+		postorder_rec(temp->right);
+		cout<<temp->data<<" ";
+	}
+	node *getroot(){
+			return root;
+	}
+	void setRoot(node *t){
+		root=t;
+	}
+	void operator=(bst &t1){
+		root=copyTree(t1.root);
+	}
+	node *copyTree(node *t){
+		node *cp=NULL;
+		if(t!=NULL){
+			cp=new node(t->data);
+			cp->left=copyTree(t->left);
+			cp->right=copyTree(t->right);
+		}
+		return cp;
+	}
+	void mirror(node* n){
+		if(n==NULL){
+			return;
+		}
+		else{
+			mirror(n->left);
+			mirror(n->right);
+			node *temp = n->left;
+			n->left = n->right;
+			n->right = temp;
+		}
+	}
+	int height(node *t){
+		if(t==NULL){
+			return -1;
+		}
+		int l=height(t->left);
+		int r=height(t->right);
+		return (max(l,r)+ 1);
+	}
+	void deleteNode(node *t){
+		if(t!=NULL){
+			deleteNode(t->left);
+			deleteNode(t->right);
+		    delete t;
+		}
+	}
+	int leafCount(){
+		queue<node*>q;
+		q.push(root);
+		int cnt=0;
+		while(!q.isEmpty()){
+			node *temp=q.front1();
+			q.pop();
+			if(temp->left == NULL && temp->right == NULL)
+				cnt++;
+			if(temp->left) q.push(temp->left);
+			if(temp->right) q.push(temp->right);
+		}
+		return cnt;
+	}
+	int internalCount(node *t){
+		if (t == NULL || (t->left == NULL && t->right == NULL))
+		    return 0;
+		return (1 + internalCount(t->left) + internalCount(t->right));
+	}
+};
+
+int main() {
+	bst b1,b2;
+	int ch,h,l,i;
+	while(true){
+		cout<<endl<<"Menu"<<endl;
+		cout<<"1. Create Iterative"<<endl;
+		cout<<"2. Create Recursive"<<endl;
+		cout<<"3. Inorder Iterative"<<endl;
+		cout<<"4. Inorder Recursive"<<endl;
+		cout<<"5. Preorder Iterative"<<endl;
+		cout<<"6. Preorder Recursive"<<endl;
+		cout<<"7. Postorder Iterative"<<endl;
+		cout<<"8. Postorder Recursive"<<endl;
+		cout<<"9. Copy Tree"<<endl;
+		cout<<"10. Mirror Tree"<<endl;
+		cout<<"11. Find Height"<<endl;
+		cout<<"12. Count Leaf Nodes"<<endl;
+		cout<<"13. Count Internal Nodes"<<endl;
+		cout<<"14. Erase All Nodes"<<endl;
+		cout<<"15. Exit"<<endl;
+		cout<<"Enter your choice: ";
+		cin>>ch;
+		switch(ch){
+		case 1:
+			b1.create_it();
+			break;
+		case 2:
+			b1.recurssiveCreation();
+			break;
+		case 3:
+			b1.inorder_it();
+			break;
+		case 4:
+			b1.inorder_rec(b1.getroot());
+			break;
+		case 5:
+			b1.preorder_it();
+			break;
+		case 6:
+			b1.preorder_rec(b1.getroot());
+			break;
+		case 7:
+			b1.postorder_it();
+			break;
+		case 8:
+			b1.postorder_rec(b1.getroot());
+			break;
+		case 9:
+			b2=b1;
+			b2.inorder_it();
+			break;
+		case 10:
+			b1.mirror(b1.getroot());
+			break;
+		case 11:
+			h=b1.height(b1.getroot());
+			cout<<"Height of tree is: "<<h<<endl;
+			break;
+		case 12:
+			l=b1.leafCount();
+			cout<<"Leaf node count: "<<l<<endl;
+			break;
+		case 13:
+			i=b1.internalCount(b1.getroot());
+			cout<<"Internal node count: "<<i<<endl;
+			break;
+		case 14:
+			b1.deleteNode(b1.getroot());
+			b1.setRoot(NULL);
+			break;
+		case 15:
+			return 0;
+			break;
+		default:
+			cout<<"Enter valid choice!!"<<endl;
+			break;
+		}
+	}
+	return 0;
+}
